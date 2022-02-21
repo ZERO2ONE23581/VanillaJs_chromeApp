@@ -2,10 +2,9 @@
 .hidden {
   display: none;
 }
-* {
-  color: white;
-}
+
 body {
   /* background: url("../img/001.jpeg") no-repeat; */
   background-size: cover;
+  color: white;
 }
