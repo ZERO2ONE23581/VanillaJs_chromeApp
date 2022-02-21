@@ -3,46 +3,54 @@ const todoInput = todoForm.querySelector("input");
 const todoList = document.getElementById("todo-list");
 
 const TODO_KEY = "todo";
-let todoArr = []; //todoArr는 항상 빈 array로 시작하기에 let으로 설정하고 parse처리된 로컬에 저장된 데이터를 다시 할당해준다!
+let todoArr = [];
 
 function handleSubmit(event) {
   event.preventDefault();
-  const todo = todoInput.value;
-  todoInput.value = null; //submit 하면 입력값 = null
-  todoArr.push(todo);
-  writeTodo(todo);
+  //로컬데이터를 삭제하기위해 각 input value에 id를 부여함
+  const todoObj = {
+    text: todoInput.value,
+    id: Date.now(),
+  };
+  todoInput.value = null;
+  console.log(todoObj);
+  todoArr.push(todoObj);
   saveTodo();
+  writeTodo(todoObj);
 }
-function writeTodo(event) {
-  const li = document.createElement("li"); //리스트 태그
+function writeTodo(todoObj) {
+  const li = document.createElement("li");
+  li.id = todoObj.id; //1. li에 아이디 할당, string형태로 할당됨.
   todoList.appendChild(li);
-  const span = document.createElement("span"); //스팬태그
+  const span = document.createElement("span");
   li.appendChild(span);
-  span.innerText = event;
-  const btn = document.createElement("button"); //삭제버튼
+  span.innerText = todoObj.text;
+  const btn = document.createElement("button");
   btn.innerText = "❌";
   li.appendChild(btn);
   btn.addEventListener("click", deleteTodo);
 }
 function deleteTodo(event) {
-  //버튼의 부모리스트를 찾으면 -> 삭제하고자하는 해당 li를 찾음 -> 지움가능
   const li = event.target.parentElement;
   li.remove();
+  //2. filter 메소드
+  todoArr = todoArr.filter((item) => item.id !== parseInt(li.id));
+  //배열안의 item의 아이디가 == li의 아이디와 같은것을 제외하고 (필터링하고), 배열에 새롭게 할당!
+  //filter는 forEach처럼 배열안에있는 item을 인수로 받아 함수에 각각 실행. return true인 값만을 새배열에 저장한다.
+  saveTodo(); //로컬에 다시저장
 }
+//로컬은 string형태로만 저장됨
 function saveTodo() {
-  //1. localstorage는 string형태로만 저장됨.
-  //2. 따라서 array를 통채로 string으로 변환해준다음에 저장해줘야됨!
-  //3. JSON.stringify; 통재로 문자열형태로 저장됨
   localStorage.setItem(TODO_KEY, JSON.stringify(todoArr));
 }
-//4. 저장된걸 get 할때 배열형태로 소환 (JSON.parse)
-const savedTodo = localStorage.getItem(TODO_KEY); //string으로 저장 -> 변수할당
-console.log(savedTodo);
+//로컬데이터 소환 -> string -> array로 변환후 -> 새배열 저장 -> 함수실행
+const savedTodo = localStorage.getItem(TODO_KEY);
 if (savedTodo !== null) {
-  const parsedTodo = JSON.parse(savedTodo); //string -> array형태로 변수에 할당
-  //forEach는 배열에있는 item들을 각각 인수삼아 함수를 실행.
-  todoArr = parsedTodo; //빈배열을 새배열로 채우기! 안채우면 이전 데이터 저장안됨!
+  const parsedTodo = JSON.parse(savedTodo);
+  todoArr = parsedTodo; //새배열 저장
   parsedTodo.forEach(writeTodo);
 }
 
 todoForm.addEventListener("submit", handleSubmit);
+
+function sexyfilter() {}
