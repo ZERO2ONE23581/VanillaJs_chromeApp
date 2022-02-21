@@ -3,7 +3,7 @@ const todoInput = todoForm.querySelector("input");
 const todoList = document.getElementById("todo-list");
 
 const TODO_KEY = "todo";
-const todoArr = [];
+let todoArr = []; //todoArr는 항상 빈 array로 시작하기에 let으로 설정하고 parse처리된 로컬에 저장된 데이터를 다시 할당해준다!
 
 function handleSubmit(event) {
   event.preventDefault();
@@ -34,9 +34,15 @@ function saveTodo() {
   //2. 따라서 array를 통채로 string으로 변환해준다음에 저장해줘야됨!
   //3. JSON.stringify; 통재로 문자열형태로 저장됨
   localStorage.setItem(TODO_KEY, JSON.stringify(todoArr));
-  const savedTodo = localStorage.getItem(TODO_KEY);
-  //콘솔에 찍어보면 단순 문자열 형태로 찍힘
-  console.log(savedTodo); //"["a","b","c"]""
+}
+//4. 저장된걸 get 할때 배열형태로 소환 (JSON.parse)
+const savedTodo = localStorage.getItem(TODO_KEY); //string으로 저장 -> 변수할당
+console.log(savedTodo);
+if (savedTodo !== null) {
+  const parsedTodo = JSON.parse(savedTodo); //string -> array형태로 변수에 할당
+  //forEach는 배열에있는 item들을 각각 인수삼아 함수를 실행.
+  todoArr = parsedTodo; //빈배열을 새배열로 채우기! 안채우면 이전 데이터 저장안됨!
+  parsedTodo.forEach(writeTodo);
 }
 
 todoForm.addEventListener("submit", handleSubmit);
